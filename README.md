@@ -5,16 +5,16 @@
 Ein Wetterbericht für das Kontextfenster, als Zeile über dem Claude-Code-Prompt. Er aktualisiert sich nach jeder Runde.
 
 ```
-☂ Regenschauer  67% · 134,4k / 200k  ▂▆  ▲ +98,3k letzte Runde
+☂ Regenschauer (showers)  67% · 134,4k / 200k  ▂▆  ▲ +98,3k letzte Runde (last turn)
 ```
 
 | Füllstand | Anzeige |
 |---|---|
-| unter 25 % | ☀ Heiter (gelb) |
-| 25–49 % | ☁ Bewölkt (cyan) |
-| 50–74 % | ☂ Regenschauer (blau) |
-| 75–89 % | ☇ Gewitter (magenta) |
-| ab 90 % | ↯ Bald komprimieren (rot) |
+| unter 25 % | ☀ Heiter (clear), gelb |
+| 25–49 % | ☁ Bewölkt (cloudy), cyan |
+| 50–74 % | ☂ Regenschauer (showers), blau |
+| 75–89 % | ☇ Gewitter (storm), magenta |
+| ab 90 % | ↯ Bald komprimieren (compact soon), rot |
 
 Danach folgen der Füllstand in Prozent, die belegten Tokens von der Fenstergröße, ein Verlauf der letzten 12 Runden (jeder Balken gemessen am ganzen Fenster) und der Zuwachs der letzten Runde. Nach einem Komprimieren zeigt er ▼ und den Rückgang.
 
