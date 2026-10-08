@@ -1,0 +1,8 @@
+{
+  "name": "token-weather",
+  "version": "0.1.0",
+  "description": "Wetterbericht für das Kontextfenster: Füllstand, Tokens, Verlauf der letzten 12 Runden und Zuwachs pro Runde, über dem Prompt",
+  "author": { "name": "reifen01", "url": "https://github.com/reifen01" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

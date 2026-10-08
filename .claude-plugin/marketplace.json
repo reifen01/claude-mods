@@ -1,0 +1,12 @@
+{
+  "name": "reifen01-mods",
+  "owner": { "name": "reifen01", "url": "https://github.com/reifen01" },
+  "metadata": { "description": "Eigene Claude-Code-Mods von reifen01" },
+  "plugins": [
+    {
+      "name": "token-weather",
+      "source": "./plugins/token-weather",
+      "description": "Wetterbericht für das Kontextfenster, über dem Prompt"
+    }
+  ]
+}
