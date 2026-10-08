@@ -29,7 +29,7 @@ function classifySegment(segment: string): Risk | null {
     const isRecursive = flags.some(f => f === '--recursive' || /^-[a-zA-Z]*[rR]/.test(f))
     if (!isRecursive) return null
     const args = ddash < 0 ? rest.filter(w => !isFlag(w)) : [...rest.slice(0, ddash).filter(w => !isFlag(w)), ...rest.slice(ddash + 1)]
-    return { kind: 'rm', label: 'Rekursives Löschen', segment, args }
+    return { kind: 'rm', label: 'Rekursives Löschen (recursive delete)', segment, args }
   }
 
   if (cmd === 'find' && rest.includes('-delete')) {
@@ -53,16 +53,16 @@ function classifySegment(segment: string): Risk | null {
     if (sub === 'checkout' && (tail.includes('--') || operands.includes('.'))) {
       const ddash = tail.indexOf('--')
       const paths = ddash < 0 ? operands : tail.slice(ddash + 1)
-      return { kind: 'git-discard', label: 'Änderungen verwerfen', segment, args: paths }
+      return { kind: 'git-discard', label: 'Änderungen verwerfen (discard changes)', segment, args: paths }
     }
     if (sub === 'restore' && !tail.includes('--staged') && !tail.includes('-S')) {
-      return { kind: 'git-discard', label: 'Änderungen verwerfen', segment, args: operands }
+      return { kind: 'git-discard', label: 'Änderungen verwerfen (discard changes)', segment, args: operands }
     }
     if (sub === 'push' && tail.some(f => f === '--force' || f.startsWith('--force-with-lease') || /^-[a-zA-Z]*f/.test(f) || /^\+/.test(f))) {
-      return { kind: 'git-push-force', label: 'Force-Push', segment, args: operands }
+      return { kind: 'git-push-force', label: 'Force-Push (force push)', segment, args: operands }
     }
     if (sub === 'branch' && tail.some(f => f === '-D' || /^-[a-zA-Z]*D/.test(f))) {
-      return { kind: 'git-branch-delete', label: 'Branch löschen (-D)', segment, args: operands }
+      return { kind: 'git-branch-delete', label: 'Branch löschen (delete branch, -D)', segment, args: operands }
     }
   }
 

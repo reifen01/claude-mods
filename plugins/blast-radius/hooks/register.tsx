@@ -42,7 +42,7 @@ export const register: Register = on => {
 
     // one held command at a time: a second waits until the first is answered
     for (let i = 0; waiting !== null && i < MAX_PAUSES && !next.signal.aborted; i++) await pause($)
-    if (waiting !== null) return { deny: 'Blast Radius: ein anderer Befehl wartet noch auf eine Antwort.' }
+    if (waiting !== null) return { deny: 'Blast Radius: ein anderer Befehl wartet noch auf eine Antwort (another command is still waiting for an answer).' }
     waiting = e.tool_use_id
     answer = null
 
@@ -68,8 +68,8 @@ export const register: Register = on => {
     if (decision === 'proceed') return next(e) // let it run
     return {
       deny:
-        `Blast Radius hat diesen Befehl angehalten, die Person hat „Abbrechen“ gewählt. ` +
-        `Er ${report.summary}. Nicht auf anderem Weg wiederholen, ohne vorher nachzufragen.`,
+        `Blast Radius hat diesen Befehl angehalten, die Person hat „Abbrechen“ gewählt (held; the user pressed Cancel). ` +
+        `Er ${report.summary}. Nicht auf anderem Weg wiederholen, ohne vorher nachzufragen (do not retry another way without asking).`,
     }
   }).catch(($, e, next) => {
     // a guard that broke before asking holds the command rather than letting it through unseen
@@ -77,7 +77,7 @@ export const register: Register = on => {
       waiting = null
       answer = null
     }
-    return next.called ? next(e) : { deny: 'Blast Radius konnte diesen Befehl nicht prüfen und hat ihn angehalten.' }
+    return next.called ? next(e) : { deny: 'Blast Radius konnte diesen Befehl nicht prüfen und hat ihn angehalten (could not check the command; held).' }
   })
 
   // the person closing the pane (✕ or Esc) is a Cancel
@@ -89,7 +89,7 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const cur = await read($, held)
     const { Text } = $.ui.resolve(e)
-    return cur ? card($, e, cur) : <Text dimColor>Kein Befehl angehalten.</Text>
+    return cur ? card($, e, cur) : <Text dimColor>Kein Befehl angehalten (nothing held).</Text>
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
@@ -113,15 +113,15 @@ function card($: EngineInterface, e: RenderInput, it: Held) {
   const summary = it.report.summary.charAt(0).toUpperCase() + it.report.summary.slice(1)
   return (
     <Box key="blast-radius" flexDirection="column">
-      <Text color={color} bold>{`⚠ ${it.risk.label} angehalten`}</Text>
+      <Text color={color} bold>{`⚠ ${it.risk.label} angehalten (held)`}</Text>
       <Text wrap="truncate-end">{`$ ${it.command}`}</Text>
       <Text bold>{summary}</Text>
       {it.report.lines.map(line => (
         <Text dimColor wrap="truncate-end">{`  ${line}`}</Text>
       ))}
       <Box flexDirection="row" gap={2} marginTop={1}>
-        <Button key="cancel" label="Abbrechen" hotkey="n" variant="primary" autoFocus onPress={() => decide($, 'cancel')} />
-        <Button key="proceed" label="Trotzdem ausführen" hotkey="j" onPress={() => decide($, 'proceed')} />
+        <Button key="cancel" label="Abbrechen (cancel)" hotkey="n" variant="primary" autoFocus onPress={() => decide($, 'cancel')} />
+        <Button key="proceed" label="Trotzdem ausführen (run anyway)" hotkey="j" onPress={() => decide($, 'proceed')} />
       </Box>
     </Box>
   )

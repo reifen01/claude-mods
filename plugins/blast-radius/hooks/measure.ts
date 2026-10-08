@@ -48,22 +48,22 @@ async function measureRm(run: Run, risk: Risk, cwd: string): Promise<Report> {
   for (const target of risk.args) {
     // a pattern or a variable expands only in the shell; it is named, not measured
     if (/[*?[\]{}$`~]/.test(target)) {
-      lines.push(`${target}: Muster, nicht ausgewertet`)
+      lines.push(`${target}: Muster, nicht ausgewertet (pattern, not measured)`)
       continue
     }
     const du = await run(['du', '-sk', '--', target])
     if (du === null) {
-      lines.push(`${target}: existiert nicht`)
+      lines.push(`${target}: existiert nicht (does not exist)`)
       continue
     }
     const size = Number(du.split(/\s/)[0]) || 0
     const count = linesOf((await run(['find', target])) ?? '').length
     files += count
     kb += size
-    lines.push(`${target}: ${countOf(count)} Einträge, ${sizeOf(size)}`)
+    lines.push(`${target}: ${countOf(count)} Einträge (entries), ${sizeOf(size)}`)
   }
   return {
-    summary: `würde ${countOf(files)} Dateien und Ordner (${sizeOf(kb)}) unwiderruflich löschen`,
+    summary: `würde ${countOf(files)} Dateien und Ordner (${sizeOf(kb)}) unwiderruflich löschen (delete for good)`,
     lines: lines.slice(0, SHOWN),
     severity: isCritical ? 'critical' : 'high',
   }
@@ -73,8 +73,8 @@ async function measureReset(run: Run, risk: Risk): Promise<Report> {
   const changed = linesOf((await run(['git', 'status', '--porcelain'])) ?? '').filter(l => !l.startsWith('??'))
   const ref = risk.args[0]
   const dropped = ref ? linesOf((await run(['git', 'log', '--oneline', `${ref}..HEAD`])) ?? '') : []
-  const parts = [`ungespeicherte Änderungen in ${countOf(changed.length)} Dateien verwerfen`]
-  if (dropped.length > 0) parts.push(`${countOf(dropped.length)} Commits vom Branch entfernen`)
+  const parts = [`ungespeicherte Änderungen in ${countOf(changed.length)} Dateien verwerfen (discard unsaved changes)`]
+  if (dropped.length > 0) parts.push(`${countOf(dropped.length)} Commits vom Branch entfernen (drop commits)`)
   return {
     summary: `würde ${parts.join(' und ')}`,
     lines: [...changed.map(l => l.slice(3)), ...dropped.map(c => `Commit ${c}`)].slice(0, SHOWN),
@@ -89,7 +89,7 @@ async function measureClean(run: Run, risk: Risk): Promise<Report> {
     l.replace(/^Would remove /, ''),
   )
   return {
-    summary: `würde ${countOf(removed.length)} ungetrackte Dateien und Ordner löschen`,
+    summary: `würde ${countOf(removed.length)} ungetrackte Dateien und Ordner löschen (delete untracked files)`,
     lines: removed.slice(0, SHOWN),
     severity: 'high',
   }
@@ -100,7 +100,7 @@ async function measureDiscard(run: Run, risk: Risk): Promise<Report> {
   const files = linesOf((await run(['git', 'diff', '--name-only', '--', ...paths])) ?? '')
   const stat = linesOf((await run(['git', 'diff', '--shortstat', '--', ...paths])) ?? '')[0]?.trim()
   return {
-    summary: `würde ungespeicherte Änderungen in ${countOf(files.length)} Dateien verwerfen`,
+    summary: `würde ungespeicherte Änderungen in ${countOf(files.length)} Dateien verwerfen (discard unsaved changes)`,
     lines: [...(stat ? [stat] : []), ...files].slice(0, SHOWN),
     severity: files.length > 0 ? 'critical' : 'high',
   }
@@ -109,14 +109,14 @@ async function measureDiscard(run: Run, risk: Risk): Promise<Report> {
 async function measurePush(run: Run): Promise<Report> {
   const upstream = (await run(['git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']))?.trim()
   if (!upstream) {
-    return { summary: 'würde einen Remote-Branch überschreiben (kein Upstream bekannt)', lines: [], severity: 'high' }
+    return { summary: 'würde einen Remote-Branch überschreiben (overwrite remote branch; no upstream known)', lines: [], severity: 'high' }
   }
   const lost = linesOf((await run(['git', 'log', '--oneline', 'HEAD..@{u}'])) ?? '')
   return {
     summary:
       lost.length > 0
-        ? `würde ${countOf(lost.length)} Commits auf ${upstream} überschreiben (Stand letzter fetch)`
-        : `überschreibt ${upstream}; laut letztem fetch geht kein Commit verloren`,
+        ? `würde ${countOf(lost.length)} Commits auf ${upstream} überschreiben (overwrite commits; as of last fetch)`
+        : `überschreibt ${upstream}; laut letztem fetch geht kein Commit verloren (no commit lost as of last fetch)`,
     lines: lost.slice(0, SHOWN).map(c => `Commit ${c}`),
     severity: lost.length > 0 ? 'critical' : 'high',
   }
@@ -131,7 +131,7 @@ async function measureBranch(run: Run, risk: Risk): Promise<Report> {
     lines.push(`${name}: ${countOf(only.length)} Commits, die sonst nirgends liegen`)
   }
   return {
-    summary: `würde ${risk.args.length === 1 ? 'einen Branch' : `${risk.args.length} Branches`} löschen, mit ${countOf(total)} Commits nur dort`,
+    summary: `würde ${risk.args.length === 1 ? 'einen Branch' : `${risk.args.length} Branches`} löschen, mit ${countOf(total)} Commits nur dort (commits only there)`,
     lines: lines.slice(0, SHOWN),
     severity: total > 0 ? 'critical' : 'high',
   }
@@ -143,11 +143,11 @@ async function measureFind(run: Run, risk: Risk): Promise<Report> {
   // only a plain find is re-run as a dry run: one that runs other programs or reads the shell is named, not run
   const isPlain = !words.some(w => /^-(exec|execdir|ok|okdir|fprint|fls|fprintf)$/.test(w) || /[$`<>]/.test(w))
   if (!isPlain) {
-    return { summary: 'würde Dateien löschen (find mit -exec, nicht ausgewertet)', lines: [], severity: 'high' }
+    return { summary: 'würde Dateien löschen (delete files; find with -exec, not measured)', lines: [], severity: 'high' }
   }
   const found = linesOf((await run(words.map(w => (w === '-delete' ? '-print' : w)))) ?? '')
   return {
-    summary: `würde ${countOf(found.length)} Dateien und Ordner löschen`,
+    summary: `würde ${countOf(found.length)} Dateien und Ordner löschen (delete files and folders)`,
     lines: found.slice(0, SHOWN),
     severity: 'high',
   }

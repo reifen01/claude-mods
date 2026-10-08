@@ -101,7 +101,7 @@ describe('measure', () => {
 
   test('counts what rm would delete', async () => {
     const report = await measure(run, classify('rm -rf build')!, '/work')
-    expect(report.summary).toBe('würde 3 Dateien und Ordner (2,3 MB) unwiderruflich löschen')
+    expect(report.summary).toBe('würde 3 Dateien und Ordner (2,3 MB) unwiderruflich löschen (delete for good)')
     expect(report.severity).toBe('high')
   })
 
@@ -112,13 +112,13 @@ describe('measure', () => {
 
   test('git clean is measured by its own dry run', async () => {
     const report = await measure(run, classify('git clean -fdx')!, '/work')
-    expect(report.summary).toBe('würde 2 ungetrackte Dateien und Ordner löschen')
+    expect(report.summary).toBe('würde 2 ungetrackte Dateien und Ordner löschen (delete untracked files)')
     expect(report.lines).toEqual(['dist/', '.cache/'])
   })
 
   test('git reset --hard counts tracked changes, not untracked files', async () => {
     const report = await measure(run, classify('git reset --hard')!, '/work')
-    expect(report.summary).toBe('würde ungespeicherte Änderungen in 2 Dateien verwerfen')
+    expect(report.summary).toBe('würde ungespeicherte Änderungen in 2 Dateien verwerfen (discard unsaved changes)')
     expect(report.severity).toBe('critical')
   })
 
@@ -142,7 +142,7 @@ describe('the hold', () => {
       const { tick } = engine(on, ran)
       const ui = await $.ui.mount({ plugin: 'blast-radius', surface, ...PANE })
       const call = $.tool.call({ tool: 'Bash', command: 'rm -rf build' })
-      await shown(ui, /Rekursives Löschen angehalten/)
+      await shown(ui, /Rekursives Löschen \(recursive delete\) angehalten/)
       expect(await ui.find({ type: 'Text', text: /3 Dateien und Ordner \(2,3 MB\)/ })).toBeDefined()
       const pressed = ui.press({ key: 'cancel' })
       const result = await settle(call, tick, ui)
@@ -156,12 +156,12 @@ describe('the hold', () => {
       const { tick } = engine(on, ran)
       const ui = await $.ui.mount({ plugin: 'blast-radius', surface, ...PANE })
       const call = $.tool.call({ tool: 'Bash', command: 'git clean -fdx' })
-      await shown(ui, /git clean angehalten/)
+      await shown(ui, /git clean angehalten \(held\)/)
       const pressed = ui.press({ key: 'proceed' })
       await settle(call, tick, ui)
       await pressed
       expect(ran).toEqual(['git clean -fdx'])
-      expect(await ui.find({ type: 'Text', text: /Kein Befehl angehalten/ })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: /Kein Befehl angehalten \(nothing held\)/ })).toBeDefined()
     })
   }
 

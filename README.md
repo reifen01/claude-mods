@@ -45,11 +45,11 @@ claude plugin test plugins/blast-radius
 Hält gefährliche Bash-Befehle von Claude an, bevor sie laufen, misst was sie anrichten würden, und fragt dich.
 
 ```
-⚠ Rekursives Löschen angehalten
+⚠ Rekursives Löschen (recursive delete) angehalten (held)
 $ rm -rf build
-Würde 1.204 Dateien und Ordner (48,3 MB) unwiderruflich löschen
-  build: 1.204 Einträge, 48,3 MB
-[ Abbrechen ]  [ Trotzdem ausführen ]
+Würde 1.204 Dateien und Ordner (48,3 MB) unwiderruflich löschen (delete for good)
+  build: 1.204 Einträge (entries), 48,3 MB
+[ Abbrechen (cancel) ]  [ Trotzdem ausführen (run anyway) ]
 ```
 
 | Erkannt | Gemessen mit |
@@ -63,6 +63,7 @@ Würde 1.204 Dateien und Ordner (48,3 MB) unwiderruflich löschen
 | `find … -delete` | derselbe `find` mit `-print` |
 
 - Die Karte erscheint als Pane, oder über dem Prompt, wenn kein Platz für ein Pane ist.
+- Beschriftungen deutsch, englischer Begriff in Klammern.
 - **Abbrechen** (Taste `n`, auch ✕ oder Esc): Claude bekommt eine Absage mit dem, was der Befehl angerichtet hätte.
 - **Trotzdem ausführen** (Taste `j`): der Befehl läuft normal.
 - Ohne Antwort nach 10 Minuten wird abgebrochen. Ohne Oberfläche (`claude -p`) läuft der Befehl wie ohne Mod.
