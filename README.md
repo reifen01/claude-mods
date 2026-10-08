@@ -38,6 +38,7 @@ Benötigt eine Claude-Code-Version mit Mod-Unterstützung (Function Hooks).
 ```
 claude plugin test plugins/token-weather
 claude plugin test plugins/blast-radius
+claude plugin test plugins/replay
 ```
 
 ## blast-radius
@@ -72,6 +73,28 @@ Installieren:
 
 ```
 /plugin install blast-radius@reifen01-mods
+```
+
+## replay
+
+Nach jeder Runde merkt sich der Mod, welche Dateien Claude geändert hat. `/replay` öffnet ein Pane und blättert Schritt für Schritt durch die Diffs.
+
+```
+Schritt 2/5  …/src/app.ts  (geändert)  +12 −3
+@@ -40,7 +40,16 @@
+ …
+[ ◀ Zurück ]  [ Weiter ▶ ]  [ Schließen ]
+```
+
+- Erfasst werden `Edit`, `Write` und `NotebookEdit`, auch die von Subagenten derselben Runde.
+- Der Diff kommt aus dem Patch, den die Engine zum Edit liefert; nichts wird neu berechnet oder erneut gelesen.
+- Tasten im Pane: `w` weiter, `z` zurück, `q` oder Esc schließen.
+- Eine neue Runde mit Änderungen ersetzt die Wiedergabe; eine Runde ohne Änderungen lässt sie stehen.
+
+Installieren:
+
+```
+/plugin install replay@reifen01-mods
 ```
 
 ## Lizenz

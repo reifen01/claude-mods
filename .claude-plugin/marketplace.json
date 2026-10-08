@@ -17,6 +17,11 @@
       "name": "blast-radius",
       "source": "./plugins/blast-radius",
       "description": "Hält gefährliche Bash-Befehle an, zeigt was sie anrichten würden, und fragt vor dem Ausführen"
+    },
+    {
+      "name": "replay",
+      "source": "./plugins/replay",
+      "description": "/replay blättert Schritt für Schritt durch die Dateiänderungen der letzten Runde"
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "name": "replay",
+  "version": "0.1.0",
+  "description": "/replay blättert Schritt für Schritt durch die Dateiänderungen der letzten Runde, als Diff in einem Pane",
+  "author": { "name": "reifen01", "url": "https://github.com/reifen01" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
