@@ -37,6 +37,41 @@ Benötigt eine Claude-Code-Version mit Mod-Unterstützung (Function Hooks).
 
 ```
 claude plugin test plugins/token-weather
+claude plugin test plugins/blast-radius
+```
+
+## blast-radius
+
+Hält gefährliche Bash-Befehle von Claude an, bevor sie laufen, misst was sie anrichten würden, und fragt dich.
+
+```
+⚠ Rekursives Löschen angehalten
+$ rm -rf build
+Würde 1.204 Dateien und Ordner (48,3 MB) unwiderruflich löschen
+  build: 1.204 Einträge, 48,3 MB
+[ Abbrechen ]  [ Trotzdem ausführen ]
+```
+
+| Erkannt | Gemessen mit |
+|---|---|
+| `rm -r` / `rm -rf` | `du`, `find` (Anzahl und Größe) |
+| `git reset --hard [ref]` | `git status`, `git log ref..HEAD` |
+| `git clean -f…` | `git clean -n` (Probelauf) |
+| `git checkout -- …`, `git restore …` | `git diff` |
+| `git push --force` / `-f` | `git log HEAD..@{u}` (Stand letzter fetch) |
+| `git branch -D` | Commits, die nur auf dem Branch liegen |
+| `find … -delete` | derselbe `find` mit `-print` |
+
+- Die Karte erscheint als Pane, oder über dem Prompt, wenn kein Platz für ein Pane ist.
+- **Abbrechen** (Taste `n`, auch ✕ oder Esc): Claude bekommt eine Absage mit dem, was der Befehl angerichtet hätte.
+- **Trotzdem ausführen** (Taste `j`): der Befehl läuft normal.
+- Ohne Antwort nach 10 Minuten wird abgebrochen. Ohne Oberfläche (`claude -p`) läuft der Befehl wie ohne Mod.
+- Gemessen wird nur lesend; Muster wie `*.log` oder `$VAR` werden genannt, nicht ausgewertet.
+
+Installieren:
+
+```
+/plugin install blast-radius@reifen01-mods
 ```
 
 ## Lizenz

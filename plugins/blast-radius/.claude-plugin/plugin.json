@@ -1,0 +1,8 @@
+{
+  "name": "blast-radius",
+  "version": "0.1.0",
+  "description": "Hält gefährliche Bash-Befehle an (rm -rf, git reset --hard, git clean, force-push …), zeigt was sie anrichten würden, und fragt vor dem Ausführen",
+  "author": { "name": "reifen01", "url": "https://github.com/reifen01" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
