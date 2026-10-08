@@ -11,11 +11,11 @@ const BLOCKS = '▁▂▃▄▅▆▇█'
 type Weather = { icon: string; word: string; color: string }
 
 export function weatherOf(percent: number): Weather {
-  if (percent < 25) return { icon: '☀', word: 'Heiter', color: 'yellow' }
-  if (percent < 50) return { icon: '☁', word: 'Bewölkt', color: 'cyan' }
-  if (percent < 75) return { icon: '☂', word: 'Regenschauer', color: 'blue' }
-  if (percent < 90) return { icon: '☇', word: 'Gewitter', color: 'magenta' }
-  return { icon: '↯', word: 'Bald komprimieren', color: 'red' }
+  if (percent < 25) return { icon: '☀', word: 'Heiter (clear)', color: 'yellow' }
+  if (percent < 50) return { icon: '☁', word: 'Bewölkt (cloudy)', color: 'cyan' }
+  if (percent < 75) return { icon: '☂', word: 'Regenschauer (showers)', color: 'blue' }
+  if (percent < 90) return { icon: '☇', word: 'Gewitter (storm)', color: 'magenta' }
+  return { icon: '↯', word: 'Bald komprimieren (compact soon)', color: 'red' }
 }
 
 // German style: 134400 → "134,4k", 200000 → "200k", 1000000 → "1M"
@@ -33,9 +33,9 @@ export function sparklineOf(history: number[], window: number): string {
 }
 
 export function deltaOf(delta: number): string {
-  if (delta > 0) return `▲ +${tokensOf(delta)} letzte Runde`
-  if (delta < 0) return `▼ −${tokensOf(-delta)} letzte Runde`
-  return '= ±0 letzte Runde'
+  if (delta > 0) return `▲ +${tokensOf(delta)} letzte Runde (last turn)`
+  if (delta < 0) return `▼ −${tokensOf(-delta)} letzte Runde (last turn)`
+  return '= ±0 letzte Runde (last turn)'
 }
 
 function percentOf(f: Forecast, tokens: number): number {
