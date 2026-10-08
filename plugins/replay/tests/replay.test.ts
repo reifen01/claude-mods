@@ -61,7 +61,7 @@ describe('the replay', () => {
     engine(on)
     await $.session.start({ source: 'startup' } as never)
     const out = await $.command.run({ command: 'replay', args: '', origin: { kind: 'person' }, presentation: { isFullscreen: false, columns: 80 } } as never)
-    expect(out.text).toBe('Keine Dateiänderungen in der letzten Runde.')
+    expect(out.text).toBe('Keine Dateiänderungen in der letzten Runde (no edits in the last turn).')
   })
 
   test("a turn's edits replay in order, and the buttons walk them", async ($, on) => {
@@ -73,20 +73,20 @@ describe('the replay', () => {
       await $.tool.call({ tool: 'Bash', command: 'ls' })
     })
     const out = await $.command.run({ command: 'replay', args: '', origin: { kind: 'person' }, presentation: { isFullscreen: false, columns: 80 } } as never)
-    expect(out.text).toBe('Wiedergabe: 2 Änderungen der letzten Runde.')
+    expect(out.text).toBe('Wiedergabe (replay): 2 Änderungen der letzten Runde.')
 
     for (const surface of ['terminal', 'desktop'] as const) {
       const ui = await $.ui.mount({ plugin: 'replay', surface, ...PANE })
-      expect(await ui.find({ type: 'Text', text: 'Schritt 1/2' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: 'Schritt (step) 1/2' })).toBeDefined()
       expect(await ui.find({ type: 'Code', text: /-b\n\+c/ })).toBeDefined()
       await ui.press({ key: 'next' })
-      expect(await ui.find({ type: 'Text', text: 'Schritt 2/2' })).toBeDefined()
-      expect(await ui.find({ type: 'Text', text: '(neu)' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: 'Schritt (step) 2/2' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: '(neu (new))' })).toBeDefined()
       expect(await ui.find({ type: 'Code', text: /\+hello\n\+world/ })).toBeDefined()
       await ui.press({ key: 'next' }) // stays on the last step
-      expect(await ui.find({ type: 'Text', text: 'Schritt 2/2' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: 'Schritt (step) 2/2' })).toBeDefined()
       await ui.press({ key: 'prev' })
-      expect(await ui.find({ type: 'Text', text: 'Schritt 1/2' })).toBeDefined()
+      expect(await ui.find({ type: 'Text', text: 'Schritt (step) 1/2' })).toBeDefined()
       await ui.unmount()
     }
   })
@@ -107,6 +107,6 @@ describe('the replay', () => {
     })
     const again = await $.ui.mount({ plugin: 'replay', surface: 'terminal', ...PANE })
     expect(await again.find({ type: 'Text', text: /two\.ts/ })).toBeDefined()
-    expect(await again.find({ type: 'Text', text: 'Schritt 1/1' })).toBeDefined()
+    expect(await again.find({ type: 'Text', text: 'Schritt (step) 1/1' })).toBeDefined()
   })
 })

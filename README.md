@@ -77,13 +77,13 @@ Installieren:
 
 ## replay
 
-Nach jeder Runde merkt sich der Mod, welche Dateien Claude geändert hat. `/replay` öffnet ein Pane und blättert Schritt für Schritt durch die Diffs.
+Nach jeder Runde merkt sich der Mod, welche Dateien Claude geändert hat. `/replay` öffnet ein Pane und blättert Schritt für Schritt durch die Diffs. Die Beschriftungen sind deutsch, mit dem englischen Begriff in Klammern.
 
 ```
-Schritt 2/5  …/src/app.ts  (geändert)  +12 −3
+Schritt (step) 2/5  …/src/app.ts  (geändert (changed))  +12 −3
 @@ -40,7 +40,16 @@
  …
-[ ◀ Zurück ]  [ Weiter ▶ ]  [ Schließen ]
+[ ◀ Zurück (back) ]  [ Weiter (next) ▶ ]  [ Schließen (close) ]
 ```
 
 - Erfasst werden `Edit`, `Write` und `NotebookEdit`, auch die von Subagenten derselben Runde.

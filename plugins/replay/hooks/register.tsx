@@ -52,27 +52,27 @@ export const register: Register = on => {
 
   on('session.start', async ($, e, next) => {
     const r = await next(e)
-    await $.command.register({ name: 'replay', description: 'Die Dateiänderungen der letzten Runde Schritt für Schritt ansehen' })
+    await $.command.register({ name: 'replay', description: 'Die Dateiänderungen der letzten Runde Schritt für Schritt ansehen (step through the last turn\'s file edits)' })
     return r
   })
 
   on('command.run', { command: 'replay' }, async $ => {
     const r = await read($, replay)
-    if (!r || r.steps.length === 0) return { text: 'Keine Dateiänderungen in der letzten Runde.' }
+    if (!r || r.steps.length === 0) return { text: 'Keine Dateiänderungen in der letzten Runde (no edits in the last turn).' }
     await update($, replay, cur => (cur ? { ...cur, index: 0 } : cur))
-    const opened = await $.ui.open({ id: PANE, title: 'Wiedergabe', focus: true, closeOnEscape: true })
+    const opened = await $.ui.open({ id: PANE, title: 'Wiedergabe (Replay)', focus: true, closeOnEscape: true })
     const n = r.steps.length
     return {
       text: opened.isPlaced
-        ? `Wiedergabe: ${n} ${n === 1 ? 'Änderung' : 'Änderungen'} der letzten Runde.`
-        : `Wiedergabe: ${n} ${n === 1 ? 'Änderung' : 'Änderungen'}; das Fenster ist zu schmal für ein Pane (${opened.reason}).`,
+        ? `Wiedergabe (replay): ${n} ${n === 1 ? 'Änderung' : 'Änderungen'} der letzten Runde.`
+        : `Wiedergabe (replay): ${n} ${n === 1 ? 'Änderung' : 'Änderungen'}; das Fenster ist zu schmal für ein Pane (too narrow: ${opened.reason}).`,
     }
-  }).catch(($, e, next) => (next.called ? next(e) : { text: 'Wiedergabe konnte nicht geöffnet werden.' }))
+  }).catch(($, e, next) => (next.called ? next(e) : { text: 'Wiedergabe konnte nicht geöffnet werden (replay could not open).' }))
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const r = await read($, replay)
     const { Text } = $.ui.resolve(e)
-    return r && r.steps.length > 0 ? card($, e, r) : <Text dimColor>Keine Dateiänderungen in der letzten Runde.</Text>
+    return r && r.steps.length > 0 ? card($, e, r) : <Text dimColor>Keine Dateiänderungen in der letzten Runde (no edits in the last turn).</Text>
   })
 }
 
@@ -80,13 +80,13 @@ function card($: EngineInterface, e: RenderInput, r: Replay) {
   const { Box, Text, Button, Code } = $.ui.resolve(e)
   const i = r.index
   const step = r.steps[i]
-  if (!step) return <Text dimColor>Keine Dateiänderungen in der letzten Runde.</Text>
+  if (!step) return <Text dimColor>Keine Dateiänderungen in der letzten Runde (no edits in the last turn).</Text>
   const n = r.steps.length
-  const kind = step.kind === 'create' ? 'neu' : step.tool === 'NotebookEdit' ? 'Notebook' : 'geändert'
+  const kind = step.kind === 'create' ? 'neu (new)' : step.tool === 'NotebookEdit' ? 'Notebook' : 'geändert (changed)'
   return (
     <Box key="replay" flexDirection="column">
       <Box flexDirection="row" gap={1}>
-        <Text bold>{`Schritt ${i + 1}/${n}`}</Text>
+        <Text bold>{`Schritt (step) ${i + 1}/${n}`}</Text>
         <Text color="cyan" wrap="truncate-start">{shortOf(step.file)}</Text>
         <Text dimColor>{`(${kind})`}</Text>
         <Text color="green">{`+${step.added}`}</Text>
@@ -95,12 +95,12 @@ function card($: EngineInterface, e: RenderInput, r: Replay) {
       {step.diff ? (
         <Code source={step.diff} format="diff" path={step.file} wrap="truncate-end" />
       ) : (
-        <Text dimColor>Kein Diff verfügbar (die Engine hat keinen Patch geliefert).</Text>
+        <Text dimColor>Kein Diff verfügbar, die Engine hat keinen Patch geliefert (no diff available).</Text>
       )}
       <Box flexDirection="row" gap={2} marginTop={1}>
-        <Button key="prev" label="◀ Zurück" hotkey="z" dimColor={i === 0} onPress={() => move($, -1)} />
-        <Button key="next" label="Weiter ▶" hotkey="w" variant="primary" autoFocus dimColor={i === n - 1} onPress={() => move($, 1)} />
-        <Button key="close" label="Schließen" hotkey="q" role="dismiss" onPress={() => $.ui.close({ id: PANE })} />
+        <Button key="prev" label="◀ Zurück (back)" hotkey="z" dimColor={i === 0} onPress={() => move($, -1)} />
+        <Button key="next" label="Weiter (next) ▶" hotkey="w" variant="primary" autoFocus dimColor={i === n - 1} onPress={() => move($, 1)} />
+        <Button key="close" label="Schließen (close)" hotkey="q" role="dismiss" onPress={() => $.ui.close({ id: PANE })} />
       </Box>
     </Box>
   )
